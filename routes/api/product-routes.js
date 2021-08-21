@@ -7,12 +7,23 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 router.get('/', (req, res) => {
   // find all products
   Product.findAll({
-    include: [{ Category }, { Tag }]
+    include: [
+      {
+        model: Category,
+        attributes: ['category_name']
+      },
+      {
+        model: Tag,
+        attributes: ['tag_name'],
+        through: ProductTag,
+        as: 'tags'
+      }
+    ]
   })
     .then(dbProductData => res.json(dbProductData))
     .catch(err => {
-        console.log(err);
-        res.status(500).json(err);
+      console.log(err);
+      res.status(500).json(err);
     });
   // be sure to include its associated Category and Tag data
 });
@@ -26,11 +37,11 @@ router.get('/:id', (req, res) => {
     },
     include: [{ Category }, { Tag }]
   })
-  .then(dbProductData => res.json(dbProductData))
-  .catch(err => {
-    console.log(err);
-    res.status(500).json(err);
-  })
+    .then(dbProductData => res.json(dbProductData))
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    })
   // be sure to include its associated Category and Tag data
 });
 
